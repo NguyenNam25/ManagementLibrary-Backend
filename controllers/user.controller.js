@@ -440,7 +440,7 @@ const loginForUser = async (req, res, next) => {
 };
 
 const Logout = async (req, res) => {
-  res.cookie("jwt", "", { maxAge: 0 });
+  res.cookie("jwt", "", { maxAge: 1 });
   res.status(200).json({ message: "Logged out successfully" });
 };
 
