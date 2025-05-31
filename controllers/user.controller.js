@@ -440,7 +440,13 @@ const loginForUser = async (req, res, next) => {
 };
 
 const Logout = async (req, res) => {
-  res.cookie("jwt", "", { maxAge: 1 });
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/"
+  });
   res.status(200).json({ message: "Logged out successfully" });
 };
 
