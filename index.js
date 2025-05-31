@@ -6,43 +6,52 @@ require('dotenv').config();
 
 const app = express();
 
-// Define allowed origins
+// Define allowed origins - REMOVE TRAILING SLASHES!
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://library-management-frontend-ruby.vercel.app",
-  "https://library-management-frontend-git-main-nguyen-quang-nams-projects.vercel.app",
-  "https://library-management-frontend-6brewhvlu.vercel.app",
-  "https://library-management-frontend.onrender.com",
-  "https://library-management-backend.onrender.com"
+  "https://management-library-frontend.vercel.app",
+  "https://management-library-frontend-git-main-nguyen-quang-nams-projects.vercel.app", 
+  "https://management-library-frontend-axpr2i2qu.vercel.app"
 ];
 
-// CORS configuration with function-based origin checking
+// CORS configuration with better logging
 app.use(cors({
   origin: function (origin, callback) {
+    console.log(`🔍 CORS Check - Origin: ${origin}`);
+    
     // Allow requests with no origin (like mobile apps, curl, postman)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('✅ No origin - allowing request');
+      return callback(null, true);
+    }
 
     // Check if origin is in allowedOrigins or matches domain patterns
     if (allowedOrigins.includes(origin) || 
         /\.vercel\.app$/.test(origin) || 
         /\.onrender\.com$/.test(origin)) {
+      console.log('✅ Origin allowed');
       return callback(null, true);
     }
 
-    // Reject requests from other origins
+    console.log('❌ Origin rejected');
     return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true,
+  credentials: true, // This is crucial for cookies!
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Remove this problematic line - Express CORS middleware handles preflight automatically
-// app.options("*", cors({...})); // <-- This was causing the error
-
+// Cookie parser MUST come before routes
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(cookieParser());
+
+// Add middleware to log cookies for debugging
+app.use((req, res, next) => {
+  console.log('🍪 Cookies received:', req.cookies);
+  console.log('📝 Headers:', req.headers);
+  next();
+});
 
 // Routes
 const bookRoute = require('./routes/book.route.js');
