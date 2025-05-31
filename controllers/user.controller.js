@@ -425,7 +425,13 @@ const loginForUser = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid password" });
     }
     const token = createToken(user);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * maxAge });
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: 1000 * maxAge,
+      secure: true,
+      sameSite: "none",
+    });
 
     res.status(200).json({message: "Login successful"});
   } catch (error) {
