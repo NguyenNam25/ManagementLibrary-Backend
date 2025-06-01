@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const app = express();
 
-// Define allowed origins - REMOVE TRAILING SLASHES!
+// Define allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
   "https://management-library-frontend.vercel.app",
@@ -14,29 +14,41 @@ const allowedOrigins = [
   "https://management-library-frontend-axpr2i2qu.vercel.app"
 ];
 
-// CORS configuration with better logging
+// Enhanced CORS configuration with detailed logging
 app.use(cors({
   origin: function (origin, callback) {
-    console.log(`🔍 CORS Check - Origin: ${origin}`);
+    console.log(`\n🔍 CORS DEBUG:`);
+    console.log(`   - Request Origin: "${origin}"`);
+    console.log(`   - Origin type: ${typeof origin}`);
+    console.log(`   - Allowed Origins:`, allowedOrigins);
     
     // Allow requests with no origin (like mobile apps, curl, postman)
     if (!origin) {
-      console.log('✅ No origin - allowing request');
+      console.log('   ✅ No origin - allowing request');
       return callback(null, true);
     }
 
-    // Check if origin is in allowedOrigins or matches domain patterns
-    if (allowedOrigins.includes(origin) || 
-        /\.vercel\.app$/.test(origin) || 
-        /\.onrender\.com$/.test(origin)) {
-      console.log('✅ Origin allowed');
+    // Check exact match first
+    if (allowedOrigins.includes(origin)) {
+      console.log('   ✅ Exact match found - allowing');
       return callback(null, true);
     }
 
-    console.log('❌ Origin rejected');
+    // Check domain patterns
+    if (/\.vercel\.app$/.test(origin) || /\.onrender\.com$/.test(origin)) {
+      console.log('   ✅ Domain pattern match - allowing');
+      return callback(null, true);
+    }
+
+    console.log('   ❌ Origin rejected - not in allowed list');
+    console.log(`   ❌ Failed checks:`);
+    console.log(`      - Exact match: ${allowedOrigins.includes(origin)}`);
+    console.log(`      - Vercel pattern: ${/\.vercel\.app$/.test(origin)}`);
+    console.log(`      - Render pattern: ${/\.onrender\.com$/.test(origin)}`);
+    
     return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true, // This is crucial for cookies!
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -46,11 +58,26 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-// Add middleware to log cookies for debugging
+// Enhanced middleware to log everything
 app.use((req, res, next) => {
-  console.log('🍪 Cookies received:', req.cookies);
-  console.log('📝 Headers:', req.headers);
+  console.log(`\n📝 REQUEST DEBUG:`);
+  console.log(`   - Method: ${req.method}`);
+  console.log(`   - URL: ${req.url}`);
+  console.log(`   - Origin Header: "${req.headers.origin}"`);
+  console.log(`   - Host Header: "${req.headers.host}"`);
+  console.log(`   - User-Agent: "${req.headers['user-agent']}"`);
+  console.log(`   - Cookies:`, req.cookies);
+  console.log(`   - All Headers:`, JSON.stringify(req.headers, null, 2));
   next();
+});
+
+// Test endpoint for debugging
+app.get('/test', (req, res) => {
+  res.json({ 
+    message: 'Test endpoint working!',
+    origin: req.headers.origin,
+    cookies: req.cookies 
+  });
 });
 
 // Routes
@@ -66,15 +93,23 @@ app.use('/majors', MajorRoute);
 app.use('/users', userRoute);
 app.use('/borrow-tickets', borrowTicketRoute);
 
-// Error handling middleware for CORS errors
+// Enhanced error handling
 app.use((err, req, res, next) => {
+  console.log(`\n❌ ERROR HANDLER:`);
+  console.log(`   - Error message: "${err.message}"`);
+  console.log(`   - Request origin: "${req.headers.origin}"`);
+  
   if (err.message === "Not allowed by CORS") {
     return res.status(403).json({
       error: "CORS Error",
-      message: "Origin not allowed"
+      message: "Origin not allowed",
+      receivedOrigin: req.headers.origin,
+      allowedOrigins: allowedOrigins
     });
   }
-  next(err);
+  
+  console.error('   - Full error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 // Connect MongoDB
@@ -86,4 +121,5 @@ mongoose.connect(process.env.MONGODB_URI)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`[🚀] Server running on http://localhost:${PORT}`);
+  console.log(`[🔧] Allowed origins:`, allowedOrigins);
 });

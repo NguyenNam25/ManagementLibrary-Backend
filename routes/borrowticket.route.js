@@ -19,8 +19,8 @@ router.get('/:id/listbook', getListBookOfTicket);
 router.get('/cardnumber/:cardNumber', getBorrowTicketByCardNumber);
 
 // Protected routes (auth required)
-router.post("/", createBorrowTicket);
+router.post("/", checkTokenAuthen, createBorrowTicket);
 router.put('/:id', checkTokenAuthen, updateBorrowTicket);
-router.delete('/:id', deleteBorrowTicket);
+router.delete('/:id', checkTokenAuthen, deleteBorrowTicket);
 
 module.exports = router

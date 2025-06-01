@@ -43,31 +43,31 @@ router.put("/profile", upload.single('image'), updateUser);
 
 // Library card routes
 router.get("/libraryCard/:cardNumber", getUserByLibraryCard);
-router.post("/libraryCard/:id", createLibraryCardForUser);
+router.post("/libraryCard/:id", checkTokenAuthen, createLibraryCardForUser);
 
 // Admin routes
 router.get("/", getAllUsers);
 router.get("/:id", getUser);
-router.put("/:id", upload.single('image'), updateUser);
-router.delete("/:id", deleteUser);
+router.put("/:id", checkTokenAuthen, upload.single('image'), updateUser);
+router.delete("/:id", checkTokenAuthen, deleteUser);
 router.get("/status/:status", getUserByStatus);
 
 // Library rules routes
-router.post("/:id/rules", addRule);
-router.delete("/:id/rules/:ruleId", deleteRuleById);
-router.put("/:id/rules/:ruleId", updateRuleById);
+router.post("/:id/rules", checkTokenAuthen, addRule);
+router.delete("/:id/rules/:ruleId", checkTokenAuthen, deleteRuleById);
+router.put("/:id/rules/:ruleId", checkTokenAuthen, updateRuleById);
 
 // Library info routes
-router.post("/:id/abouts", upload.single('image'), addLibInfo);
-router.delete("/:id/abouts/:libInfoId", deleteLibInfoById);
-router.put("/:id/abouts/:libInfoId", upload.single('image'), updateLibInfoById);
+router.post("/:id/abouts", checkTokenAuthen, upload.single('image'), addLibInfo);
+router.delete("/:id/abouts/:libInfoId", checkTokenAuthen, deleteLibInfoById);
+router.put("/:id/abouts/:libInfoId", checkTokenAuthen, upload.single('image'), updateLibInfoById);
 
 // Library services routes
-router.post("/:id/services", addService);
-router.delete("/:id/services/:serviceId", deleteServiceById);
-router.put("/:id/services/:serviceId", updateServiceById);
+router.post("/:id/services", checkTokenAuthen, addService);
+router.delete("/:id/services/:serviceId", checkTokenAuthen, deleteServiceById);
+router.put("/:id/services/:serviceId", checkTokenAuthen, updateServiceById);
 
 // User interested book routes
-router.post("/:id/interested-books", updateUserInterestedBook);
-router.delete("/:id/interested-books/:bookId", deleteUserInterestedBook);
+router.post("/:id/interested-books", checkTokenAuthen, updateUserInterestedBook);
+router.delete("/:id/interested-books/:bookId", checkTokenAuthen, deleteUserInterestedBook);
 module.exports = router;

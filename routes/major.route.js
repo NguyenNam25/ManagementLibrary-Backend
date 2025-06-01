@@ -12,6 +12,8 @@ const {
   deleteType,
   deleteCategory,
   getPopularCategories,
+  updateType,
+  updateCategory,
 } = require("../controllers/major.controller.js");
 
 // Public routes (no auth needed)
@@ -26,5 +28,6 @@ router.post("/type/", checkTokenAuthen, addType);
 router.post("/category/", checkTokenAuthen, addCategory);
 router.delete("/type/:id", checkTokenAuthen, deleteType);
 router.delete("/category/:id", checkTokenAuthen, deleteCategory);
-
+router.put("/type/:id", checkTokenAuthen, updateType);  
+router.put("/category/:id", checkTokenAuthen, updateCategory);
 module.exports = router;

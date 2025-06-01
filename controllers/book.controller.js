@@ -51,14 +51,15 @@ const updateBook = async (req, res) => {
       return res.status(404).json({ message: "Book not found" });
     }
 
-    const { title, author, quantity, status, description} = req.body;
+    const { title, author, quantity, status, description, borrowCount} = req.body;
 
     if (title !== undefined) book.title = title;
     if (author !== undefined) book.author = author;
     if (quantity !== undefined) book.quantity = quantity;
     if (status !== undefined) book.status = status;
     if (description !== undefined) book.description = description;
-
+    if (borrowCount !== undefined) book.borrowCount = borrowCount;
+    
     if (req.file) {
       try {
         console.log(req.file);

@@ -78,6 +78,28 @@ const addCategory = async (req, res) => {
   }
 };
 
+const updateType = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, borrowCount } = req.body;
+    await Major.findByIdAndUpdate(id, { name: name, borrowCount: borrowCount });
+    res.status(200).json({ message: 'Type updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, borrowCount } = req.body;
+    await Major.findByIdAndUpdate(id, { name: name, borrowCount: borrowCount });
+    res.status(200).json({ message: 'Category updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+} 
+
 const deleteType = async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,7 +122,7 @@ const deleteCategory = async (req, res) => {
 
 const getPopularCategories = async (req, res) => {
   try {
-    const categories = await Major.find({ kind: 'category' }).sort({ borrowCount: -1 }).limit(5);
+    const categories = await Major.find({ kind: 'category' }).sort({ borrowCount: -1 }).limit(4);
     res.status(200).json(categories);
   } catch (error) { 
     res.status(500).json({ message: error.message });
@@ -117,4 +139,6 @@ module.exports = {
   deleteType,
   deleteCategory,
   getPopularCategories,
+  updateType,
+  updateCategory,
 };
