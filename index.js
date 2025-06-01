@@ -92,6 +92,9 @@ app.use('/roles', roleRoute);
 app.use('/majors', MajorRoute);
 app.use('/users', userRoute);
 app.use('/borrow-tickets', borrowTicketRoute);
+app.get('/', (req, res) => {
+  res.send('Backend is running');
+});
 
 // Enhanced error handling
 app.use((err, req, res, next) => {
