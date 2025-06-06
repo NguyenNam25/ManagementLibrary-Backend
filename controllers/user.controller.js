@@ -86,7 +86,7 @@ const updateUser = async (req, res) => {
     }
 
     const user = await User.findByIdAndUpdate(id, updateData, { new: true });
-    res.status(200).json(user);
+    res.status(201).json(user);
   } catch (error) {
     console.error("Update user error:", error);
     res.status(500).json({ message: error.message });
@@ -410,6 +410,22 @@ const createLibraryCardForUser = async (req, res) => {
   }
 };
 
+const updateLibraryCardExpiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { expirationDate } = req.body;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.libraryCard.expirationDate = expirationDate;
+    await user.save();
+    res.status(201).json({ message: "Library card updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}   
+
 const loginForUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -532,5 +548,6 @@ module.exports = {
   Logout,
   getCurrentUser,
   updateUserInterestedBook,
-  deleteUserInterestedBook
+  deleteUserInterestedBook,
+  updateLibraryCardExpiry
 };

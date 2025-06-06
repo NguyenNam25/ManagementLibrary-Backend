@@ -36,6 +36,9 @@ const BorrowTicketSchema = new mongoose.Schema(
       enum: ["pending", "borrowed", "expired", "returned"],
       default: "pending",
     },
+    expiredDate: {
+      type: Date,
+    },  
   },
   {
     timestamps: true,
@@ -52,6 +55,12 @@ BorrowTicketSchema.pre("save", async function (next) {
 
     const paddedNumber = String(counter.seq).padStart(5, "0");
     this.ticketId = `TKBR-${paddedNumber}`;
+  }
+
+  if (this.borrowDate && this.allowedDays && !this.expiredDate) {
+    const borrow = new Date(this.borrowDate);
+    borrow.setDate(borrow.getDate() + this.allowedDays);
+    this.expiredDate = borrow;
   }
   next();
 });

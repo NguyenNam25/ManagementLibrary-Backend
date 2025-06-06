@@ -117,7 +117,10 @@ app.use((err, req, res, next) => {
 
 // Connect MongoDB
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('[✅] MongoDB connected'))
+  .then(() => {
+    console.log('[✅] MongoDB connected');
+    require("./agendaRunner.js");
+  })
   .catch(err => console.error('[❌] MongoDB connection error:', err));
 
 // Start server

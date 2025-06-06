@@ -112,9 +112,11 @@ const UserSchema = new mongoose.Schema({
   }],
   status: {
     type: String,
-    enum: ["active", "blocked", "unverified"],
+    enum: ["active", "blocked", "unverified", "expired"],
     default: "unverified"
   },
+  blockedAt: { type: Date },
+  expiredAt: { type: Date },
   //Admin
   abouts: [{
     type: {

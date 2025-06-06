@@ -25,7 +25,8 @@ const {
   deleteServiceById,
   updateServiceById,
   updateUserInterestedBook,
-  deleteUserInterestedBook
+  deleteUserInterestedBook,
+  updateLibraryCardExpiry
 } = require("../controllers/user.controller.js");
 
 // Public routes (no authentication required)
@@ -44,6 +45,7 @@ router.put("/profile", upload.single('image'), updateUser);
 // Library card routes
 router.get("/libraryCard/:cardNumber", getUserByLibraryCard);
 router.post("/libraryCard/:id", checkTokenAuthen, createLibraryCardForUser);
+router.put("/libraryCard/:id", checkTokenAuthen, updateLibraryCardExpiry);
 
 // Admin routes
 router.get("/", getAllUsers);
