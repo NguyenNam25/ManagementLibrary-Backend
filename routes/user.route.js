@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { checkTokenAuthen } = require('../middleware/auth');
 const upload = require('../middleware/multer.js');
+const { checkRoles } = require('../middleware/checkrole');
 
 const {
   getAllUsers,
@@ -39,8 +40,8 @@ router.get("/logout", Logout);
 
 // User profile routes
 router.get("/current-user", getCurrentUser);
-router.get("/profile", getUser);
-router.put("/profile", upload.single('image'), updateUser);
+router.get("/profile", checkTokenAuthen, getUser);
+router.put("/profile", checkTokenAuthen, upload.single('image'), updateUser);
 
 // Library card routes
 router.get("/libraryCard/:cardNumber", getUserByLibraryCard);
@@ -55,19 +56,19 @@ router.delete("/:id", checkTokenAuthen, deleteUser);
 router.get("/status/:status", getUserByStatus);
 
 // Library rules routes
-router.post("/:id/rules", checkTokenAuthen, addRule);
-router.delete("/:id/rules/:ruleId", checkTokenAuthen, deleteRuleById);
-router.put("/:id/rules/:ruleId", checkTokenAuthen, updateRuleById);
+router.post("/:id/rules", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), addRule);
+router.delete("/:id/rules/:ruleId", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), deleteRuleById);
+router.put("/:id/rules/:ruleId", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), updateRuleById);
 
 // Library info routes
-router.post("/:id/abouts", checkTokenAuthen, upload.single('image'), addLibInfo);
-router.delete("/:id/abouts/:libInfoId", checkTokenAuthen, deleteLibInfoById);
-router.put("/:id/abouts/:libInfoId", checkTokenAuthen, upload.single('image'), updateLibInfoById);
+router.post("/:id/abouts", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), upload.single('image'), addLibInfo);
+router.delete("/:id/abouts/:libInfoId", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), deleteLibInfoById);
+router.put("/:id/abouts/:libInfoId", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), upload.single('image'), updateLibInfoById);
 
 // Library services routes
-router.post("/:id/services", checkTokenAuthen, addService);
-router.delete("/:id/services/:serviceId", checkTokenAuthen, deleteServiceById);
-router.put("/:id/services/:serviceId", checkTokenAuthen, updateServiceById);
+router.post("/:id/services", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), addService);
+router.delete("/:id/services/:serviceId", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), deleteServiceById);
+router.put("/:id/services/:serviceId", checkTokenAuthen, checkRoles(['680a42aa89f73ba902c99b5d']), updateServiceById);
 
 // User interested book routes
 router.post("/:id/interested-books", checkTokenAuthen, updateUserInterestedBook);

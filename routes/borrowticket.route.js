@@ -13,10 +13,10 @@ const {
 } = require("../controllers/borrowticket.controller.js");
 
 // Public routes (no auth needed)
-router.get("/", getBorrowTickets);
-router.get("/:id", getBorrowTicket);
-router.get('/:id/listbook', getListBookOfTicket);
-router.get('/cardnumber/:cardNumber', getBorrowTicketByCardNumber);
+router.get("/", checkTokenAuthen, getBorrowTickets);
+router.get("/:id", checkTokenAuthen, getBorrowTicket);
+router.get('/:id/listbook', checkTokenAuthen, getListBookOfTicket);
+router.get('/cardnumber/:cardNumber', checkTokenAuthen, getBorrowTicketByCardNumber);
 
 // Protected routes (auth required)
 router.post("/", checkTokenAuthen, createBorrowTicket);

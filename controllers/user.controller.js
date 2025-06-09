@@ -65,34 +65,47 @@ const createUser = async (req, res, next) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = { ...req.body };
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { fullName, phoneNumber, citizenId, dateOfBirth, email, password, status, role } = req.body;
+
+    if (fullName !== undefined) user.fullName = fullName;
+    if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
+    if (citizenId !== undefined) user.citizenId = citizenId;
+    if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
+    if (email !== undefined) user.email = email;
+    if (password !== undefined) user.password = password;
+    if (status !== undefined) user.status = status;
+    if (role !== undefined) user.role = role;
 
     if (req.file) {
       try {
         const upload = await cloudinary.uploader.upload(req.file.path, {
           folder: "User",
         });
-        updateData.image = upload.secure_url;
+        console.log("Cloudinary result:", upload);
+        user.image = upload.secure_url;
       } catch (err) {
-        console.error("Upload image error:", err);
-        return res.status(500).json({ message: "Failed to upload image" });
+        console.log(err);
       }
     }
 
-    if (updateData.password) {
+    if (password) {
       const saltRounds = 10;
-      const hash = bcrypt.hashSync(updateData.password, saltRounds);
-      updateData.password = hash;
+      const hash = bcrypt.hashSync(password, saltRounds);
+      user.password = hash;
     }
 
-    const user = await User.findByIdAndUpdate(id, updateData, { new: true });
+    await user.save();
     res.status(201).json(user);
   } catch (error) {
     console.error("Update user error:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const deleteUser = async (req, res) => {
   try {
@@ -103,27 +116,6 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// export const updateUser = async (req, res, next) => {
-//   try {
-//     const userId = req.user._id;
-//     const findUser = await account.findOne({ _id: userId });
-//     if (!findUser) {
-//       const response = await apiResponse.notFound("Not found your account");
-//       return res.status(response.status).json(response.body);
-//     }
-//     let avatarUploadError = null;
-//     if (req.file) {
-//       const uploadResult = await uploadImage(req.file);
-//       if (uploadResult.error) {
-//         avatarUploadError = uploadResult.error;
-//       } else {
-//         findUser.avatar = uploadResult.url;
-//       }
-//     }
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 const addRule = async (req, res) => {
   try {
